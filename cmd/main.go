@@ -8,16 +8,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
+	"tradingview/internal/config"
 )
 
 const (
-	apiKey     = "YOUR_API_KEY"
-	secretKey  = "YOUR_SECRET_KEY"
-	passphrase = "YOUR_PASSPHRASE"
-	baseURL    = "https://www.okx.com"
+	apiKey      = "YOUR_API_KEY"
+	secretKey   = "YOUR_SECRET_KEY"
+	passphrase  = "YOUR_PASSPHRASE"
+	baseURL     = "https://www.okx.com"
+	CONFIG_DIR  = "configs"
+	CONFIG_FILE = "config"
 )
 
 type TickerResponse struct {
@@ -239,11 +243,18 @@ func tradingBot(instId string, interval time.Duration, buyThreshold, sellThresho
 }
 
 func main() {
+	cfg, err := config.New(CONFIG_DIR, CONFIG_FILE)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("config%#v\n", cfg)
+	fmt.Println(cfg.OKX.ApiKey, cfg.OKX.SecretKey, cfg.OKX.ApiKey)
 	instId := "ZETA-USDT"
 	interval := 1 * time.Second
 	buyThreshold := 0.7
 	sellThreshold := 0.80
-	tradeSize := 100.0
+	tradeSize := 1.0
 
 	fmt.Printf("Запуск торгового бота для %s...\n", instId)
 	tradingBot(instId, interval, buyThreshold, sellThreshold, tradeSize)
